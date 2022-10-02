@@ -1,10 +1,10 @@
-let systems = JSON.parse(Deno.readTextFileSync("./systems.json"))
-let roles = JSON.parse(Deno.readTextFileSync("./roles.json"))
+const systems = JSON.parse(Deno.readTextFileSync("./systems.json"))
+const roles = JSON.parse(Deno.readTextFileSync("./roles.json"))
 
-let output: {
+const output: {
     schema: number,
     systems: {
-        [id: string]: any
+        [id: string]: never
     },
     users: {
         [id: string]: {
@@ -23,11 +23,10 @@ let output: {
     "servers": {}
 }
 
-let i = 0;
-for (let j in systems) {
-    let system = systems[j]
-    let id = toPkString(i);
-    let obj = {
+for (const j in systems) {
+    const system = systems[j]
+    const id = system.id;
+    const obj = {
         id,
         accounts: [j],
         name: system.name,
@@ -37,17 +36,15 @@ for (let j in systems) {
         timestamp: system.created,
         autoType: system.auto_bool? "latch": undefined,
         members: {},
-        serverProxy: {},
+        serverProxy: system.server_proxy,
         proxyTags: [],
-        switches: {}
+        switches: system.switches
     }
 
-
-    let k = 0;
-    for (let l in system.members) {
-        let member = system.members[l]
-        let memid = toPkString(k)
-        //@ts-ignore
+    for (const l in system.members) {
+        const member = system.members[l]
+        const memid = member.id
+        //@ts-ignore technically doesn't exist in type
         obj.members[memid] = {
             id: memid,
             name: member.name,
@@ -64,36 +61,22 @@ for (let j in systems) {
             serverAvatarUrl: member.server_avatar,
             serverProxy: member.server_proxy
         }
-        for (let m in member.proxy_tags) {
-            let proxy = member.proxy_tags[m]
-            proxy.member = memid
+        for (const m in member.proxy_tags) {
+            const proxy = member.proxy_tags[m]
             obj.proxyTags.push(<never>proxy)
         }
-        k++
     }
-    output.systems[id] = obj
+    console.log(obj)
+    output.systems[id] = <never>obj
     output.users[j] = {
         system: id
     }
-    i++
 }
 
-for (let p in roles) {
+for (const p in roles) {
     output.servers[p] = {
         role: roles[p]
     }
 }
 
 Deno.writeTextFileSync("./systems_output.json", JSON.stringify(output))
-
-function toPkString(i: number): string {
-    let temp = Math.floor(i)
-    let out = ""
-    while (temp > 0) {
-        out += String.fromCharCode(97 + (temp%26))
-        temp /= 26
-        temp = Math.floor(temp)
-    }
-    out += "a".repeat(5-out.length)
-    return out.split("").reverse().join("")
-}
