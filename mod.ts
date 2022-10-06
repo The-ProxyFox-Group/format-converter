@@ -31,18 +31,18 @@ for (const j in systems) {
     if (!validIdRegex.test(id)) {
         id = generateRandomId()
     }
-    while (output.systems[id] != undefined) {
+    while (output.systems[id] != null) {
         id = generateRandomId()
     }
     const obj = {
         id,
         accounts: [j],
-        name: system.name == "" ? undefined : system.name,
-        description: system.description == "" ? undefined : system.description,
-        tag: system.tag == "" ? undefined : system.tag,
-        avatarUrl: system.avatar_url == "" ? undefined : system.avatar_url,
-        timestamp: system.created == "" ? undefined : system.created,
-        autoType: system.auto_bool? "latch": undefined,
+        name: system.name == "" ? null : system.name,
+        description: system.description == "" ? null : system.description,
+        tag: system.tag == "" ? null : system.tag,
+        avatarUrl: system.avatar_url == "" ? null : system.avatar_url,
+        timestamp: system.created == "" ? null : system.created,
+        autoType: system.auto_bool? "latch": null,
         members: {},
         serverProxy: system.server_proxy,
         proxyTags: [],
@@ -57,7 +57,7 @@ for (const j in systems) {
             memid = generateRandomId()
         }
         //@ts-ignore aaaaaaaaaaaaaaaaaaaaaaaaaa
-        while (obj.members[memid] != undefined) {
+        while (obj.members[memid] != null) {
             memid = generateRandomId()
         }
         for (const sw of obj.switches)
@@ -67,15 +67,15 @@ for (const j in systems) {
         obj.members[memid] = {
             id: memid,
             name: typeof member.name != "string" || member.name == "" ? memid : member.name,
-            displayName: member.dispaly_name == "" ? undefined : member.displayName,
-            description: member.description == "" ? undefined : member.description,
-            birthday: member.birthday == "" ? undefined : member.birthday,
-            pronouns: member.pronouns == "" ? undefined : member.pronouns,
-            color: member.color == "" ? undefined : member.color,
-            avatarUrl: member.avatar_url == "" ? undefined : member.avatar_url,
+            displayName: typeof member.dispaly_name != "string" || member.dispaly_name == "" ? null : member.displayName,
+            description: typeof member.description != "string" || member.description == "" ? null : member.description,
+            birthday: typeof member.birthday != "string" || member.birthday == "" ? null : member.birthday,
+            pronouns: typeof member.pronouns != "string" || member.pronouns == "" ? null : member.pronouns,
+            color: typeof member.color != "string" || member.color == "" ? null : member.color,
+            avatarUrl: typeof member.avatar_url != "string" || member.avatar_url == "" ? null : member.avatar_url,
             keepProxy: member.keep_proxy,
             messageCount: member.message_count,
-            timestamp: member.created == "" ? undefined : member.timestamp,
+            timestamp: typeof member.created != "string" || member.created == "" ? null : member.timestamp,
             serverDisplayName: member.server_nick,
             serverAvatarUrl: member.server_avatar,
             serverProxy: member.server_proxy
