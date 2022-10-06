@@ -46,12 +46,13 @@ for (const j in systems) {
         members: {},
         serverProxy: system.server_proxy,
         proxyTags: [],
-        switches: []
+        switches: system.switches
     }
 
     for (const l in system.members) {
         const member = system.members[l]
         let memid = member.id
+        const oldid = memid
         if (!validIdRegex.test(memid)) {
             memid = generateRandomId()
         }
@@ -59,6 +60,9 @@ for (const j in systems) {
         while (obj.members[memid] != undefined) {
             memid = generateRandomId()
         }
+        for (const sw of obj.switches)
+            for (let i = 0; i < sw.members.length; i++)
+                if (sw.members[i] == oldid) sw.members[i] = memid
         //@ts-ignore technically doesn't exist in type
         obj.members[memid] = {
             id: memid,
@@ -81,6 +85,13 @@ for (const j in systems) {
             obj.proxyTags.push(<never>proxy)
         }
     }
+    const newSwitches = []
+    for (let i = 0; i < obj.switches.length; i++) {
+        if (!obj.switches[i].timestamp || typeof obj.switches[i].timestamp != "string") continue
+        else if (!obj.switches[i] || typeof obj.switches != "object") continue
+        newSwitches.push(obj.switches[i])
+    }
+    obj.switches = newSwitches
     console.log(obj)
     output.systems[id] = <never>obj
     output.users[j] = {
