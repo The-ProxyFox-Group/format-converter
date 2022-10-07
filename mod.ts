@@ -63,6 +63,18 @@ for (const j in systems) {
         for (const sw of obj.switches)
             for (let i = 0; i < sw.members.length; i++)
                 if (sw.members[i] == oldid) sw.members[i] = memid
+        let color = typeof member.color != "string" || member.color == "" ? null : member.color as string
+        let colornum: number = -1
+        if (color) {
+            if (color.startsWith("#")) {
+                color = color.substring(1)
+            }
+            if (color.startsWith("0x")) {
+                color = color.substring(2)
+            }
+            colornum = parseInt(color, 16)
+            if (colornum > 0xffffff) colornum = -1
+        }
         //@ts-ignore technically doesn't exist in type
         obj.members[memid] = {
             id: memid,
@@ -71,7 +83,7 @@ for (const j in systems) {
             description: typeof member.description != "string" || member.description == "" ? null : member.description,
             birthday: typeof member.birthday != "string" || member.birthday == "" ? null : member.birthday,
             pronouns: typeof member.pronouns != "string" || member.pronouns == "" ? null : member.pronouns,
-            color: typeof member.color != "string" || member.color == "" ? null : member.color,
+            color: colornum,
             avatarUrl: typeof member.avatar_url != "string" || member.avatar_url == "" ? null : member.avatar_url,
             keepProxy: member.keep_proxy,
             messageCount: member.message_count,
@@ -82,6 +94,11 @@ for (const j in systems) {
         }
         for (const m in member.proxy_tags) {
             const proxy = member.proxy_tags[m]
+            let prefix = false
+            let suffix = false
+            if (proxy.prefix && proxy.prefix != "") prefix = true
+            if (proxy.suffix && proxy.suffix != "") suffix = true
+            if (!prefix && !suffix) continue
             obj.proxyTags.push(<never>proxy)
         }
     }
